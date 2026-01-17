@@ -112,9 +112,11 @@ export default function Home() {
     if (Boolean(params?.get("query"))) {
       setCurrentPage(1);
       setPageSize(1000);
+    } else {
+      handlePaginationQuery();
     }
   }, [params?.get("query")]);
-  
+
   return (
     <div className="flex min-h-screen items-center justify-center w-full bg-zinc-50 font-sans">
       <div className="w-full h-full">

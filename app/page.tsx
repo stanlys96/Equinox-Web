@@ -84,6 +84,8 @@ export default function Home() {
     if (Boolean(params?.get("query"))) {
       setCurrentPage(1);
       setPageSize(1000);
+    } else {
+      handlePaginationQuery();
     }
   }, [params?.get("query")]);
 
