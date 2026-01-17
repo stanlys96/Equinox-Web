@@ -15,8 +15,8 @@ export default function Home() {
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const userData = useAppSelector((state) => state.user);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(userData?.currentPagination);
+  const [currentPage, setCurrentPage] = useState(Number(params?.get("page") || 1));
+  const [pageSize, setPageSize] = useState(Number(params?.get("pagination") || 10) || userData?.currentPagination);
   const [pokeQuery, setPokeQuery] = useState(params?.get("query") || "");
   const { data: pokeData } = useSWR(
     ["poke", "?limit=1000"],
@@ -30,12 +30,18 @@ export default function Home() {
 
   const handleArrowButton = (next: boolean) => {
     if (next) {
+      const nextPage = Math.min(currentPage + 1, totalPages);
+      params.set("page", nextPage?.toString());
       dispatch(updateOffset(currentPage * pageSize));
-      setCurrentPage((p) => Math.min(p + 1, totalPages));
+      setCurrentPage(nextPage);
     } else {
-      setCurrentPage((p) => Math.max(p - 1, 1));
+      const previousPage = Math.max(currentPage - 1, 1);
+      setCurrentPage(previousPage);
+      params.set("page", previousPage?.toString());
       dispatch(updateOffset((currentPage - 2) * pageSize));
     }
+    params.set("pagination", pageSize?.toString());
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const visibleResult = useMemo(() => {
@@ -57,7 +63,8 @@ export default function Home() {
       setPageSize(1000);
       params.set('query', data);
     } else {
-      setPageSize(userData?.currentPagination);
+      setPageSize(Number(params?.get("pagination")) || 10);
+      setCurrentPage(Number(params?.get("page")) || 1);
       params.delete('query');
     }
     router.replace(`${pathname}?${params.toString()}`);
@@ -66,9 +73,13 @@ export default function Home() {
   const showFooter = !pokeQuery;
 
   useEffect(() => {
-    setPageSize(userData?.currentPagination);
-    setCurrentPage(1);
-  }, [userData?.currentPagination]);
+    setPageSize(Number(params?.get("pagination")) || 10);
+    setCurrentPage(Number(params?.get("page")) || 1);
+  }, [params?.get("pagination"), params?.get("page")]);
+
+  useEffect(() => {
+    dispatch(updateOffset((currentPage - 1) * pageSize));
+  }, [currentPage, pageSize]);
 
   useEffect(() => {
     return () => {

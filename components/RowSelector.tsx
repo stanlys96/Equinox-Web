@@ -4,10 +4,15 @@ import React, { useState } from 'react';
 import { ChevronUp, ListOrdered } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { updatePagination, updateOffset } from '@/store/slice/userSlice';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
 export const RowSelector = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
   const dispatch = useAppDispatch();
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams);
   const currentPagination = useAppSelector((state) => state.user.currentPagination);
   
   const options = [10, 30, 50];
@@ -23,7 +28,7 @@ export const RowSelector = () => {
           onClick={() => setIsOpen(!isOpen)}
           className="flex cursor-pointer items-center justify-between w-24 px-4 py-2 text-sm font-semibold text-white bg-slate-800 border border-slate-700 rounded-xl hover:bg-slate-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
         >
-          {currentPagination}
+          {params?.get("pagination") || currentPagination}
           <ChevronUp 
             size={16} 
             className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
@@ -45,10 +50,13 @@ export const RowSelector = () => {
                   onClick={() => {
                     dispatch(updatePagination(option));
                     dispatch(updateOffset(0))
+                    params.set('page', '1');
+                    params.set('pagination', option?.toString());
                     setIsOpen(false);
+                    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
                   }}
                   className={`block w-full cursor-pointer px-4 py-2 text-sm text-left transition-colors ${
-                    currentPagination === option 
+                    (Number(params?.get("pagination")) || currentPagination) === option 
                       ? 'bg-orange-600 text-white' 
                       : 'text-slate-300 hover:bg-slate-700 hover:text-white'
                   }`}

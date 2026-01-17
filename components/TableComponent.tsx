@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from 'react';
-import { Eye, Trash2, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
+import { Eye, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import Link from 'next/link';
 import { RowSelector } from './RowSelector';
 import { useAppSelector } from '@/store/hooks';
@@ -40,7 +40,7 @@ export const TableComponent = ({
 		tableRef.current?.scrollIntoView({ behavior: 'smooth' });
 		onClickPrevButton && onClickPrevButton();
 	};
-		
+
 	const handleNextButton = () => {
 		tableRef.current?.scrollIntoView({ behavior: 'smooth' });
 		onClickNextButton && onClickNextButton();
