@@ -106,7 +106,7 @@ const ProductForm = () => {
 
 				<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 					<div className="space-y-1.5">
-						<label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Asset Title</label>
+						<label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Product Title</label>
 						<input
 							{...register("title", { required: "Title is required" })}
 							placeholder="e.g. Lamborghini"
@@ -167,7 +167,7 @@ const ProductForm = () => {
 						</div>
 					</div>
 					<div className="space-y-1.5">
-						<label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Technical Description</label>
+						<label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Description</label>
 						<div>
 							<textarea
 								{...register("description", { required: "Description is required" })}
