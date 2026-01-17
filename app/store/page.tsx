@@ -107,6 +107,14 @@ export default function Home() {
       dispatch(updatePagination(10));
     }
   }, []);
+
+  useEffect(() => {
+    if (Boolean(params?.get("query"))) {
+      setCurrentPage(1);
+      setPageSize(1000);
+    }
+  }, [params?.get("query")]);
+  
   return (
     <div className="flex min-h-screen items-center justify-center w-full bg-zinc-50 font-sans">
       <div className="w-full h-full">

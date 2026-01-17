@@ -75,10 +75,17 @@ export default function Home() {
   }
 
   const showFooter = !pokeQuery;
-
+  
   useEffect(() => {
     handlePaginationQuery();
   }, [params?.get("pagination"), params?.get("page")]);
+  
+  useEffect(() => {
+    if (Boolean(params?.get("query"))) {
+      setCurrentPage(1);
+      setPageSize(1000);
+    }
+  }, [params?.get("query")]);
 
   useEffect(() => {
     dispatch(updateOffset((currentPage - 1) * pageSize));
