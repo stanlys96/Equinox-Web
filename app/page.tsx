@@ -49,6 +49,11 @@ export default function Home() {
     return pokeFinalResult?.slice(start, start + pageSize);
   }, [pokeFinalResult, currentPage]);
 
+  const handlePaginationQuery = () => {
+    setPageSize(Number(params?.get("pagination")) || 10);
+    setCurrentPage(Number(params?.get("page")) || 1);
+  }
+
   const resetTablePagination = () => {
     dispatch(updateOffset(0));
     dispatch(updatePagination(10));
@@ -63,8 +68,7 @@ export default function Home() {
       setPageSize(1000);
       params.set('query', data);
     } else {
-      setPageSize(Number(params?.get("pagination")) || 10);
-      setCurrentPage(Number(params?.get("page")) || 1);
+      handlePaginationQuery();
       params.delete('query');
     }
     router.replace(`${pathname}?${params.toString()}`);
@@ -73,8 +77,7 @@ export default function Home() {
   const showFooter = !pokeQuery;
 
   useEffect(() => {
-    setPageSize(Number(params?.get("pagination")) || 10);
-    setCurrentPage(Number(params?.get("page")) || 1);
+    handlePaginationQuery();
   }, [params?.get("pagination"), params?.get("page")]);
 
   useEffect(() => {

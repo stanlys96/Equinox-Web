@@ -30,6 +30,11 @@ export default function Home() {
 
   const showFooter = !storeQuery;
 
+  const handlePaginationQuery = () => {
+    setPageSize(Number(params?.get("pagination")) || 10);
+    setCurrentPage(Number(params?.get("page")) || 1);
+  }
+
   const handleArrowButton = (next: boolean) => {
     if (next) {
       const nextPage = Math.min(currentPage + 1, totalPages);
@@ -55,16 +60,14 @@ export default function Home() {
       setPageSize(1000);
       params.set('query', data);
     } else {
-      setPageSize(Number(params?.get("pagination")) || 10);
-      setCurrentPage(Number(params?.get("page")) || 1);
+      handlePaginationQuery();
       params.delete('query');
     }
     router.replace(`${pathname}?${params.toString()}`);
   }
 
   useEffect(() => {
-    setPageSize(Number(params?.get("pagination")) || 10);
-    setCurrentPage(Number(params?.get("page")) || 1);
+    handlePaginationQuery();
   }, [params?.get("pagination"), params?.get("page")]);
 
   useEffect(() => {
