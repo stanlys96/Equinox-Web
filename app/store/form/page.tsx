@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Package, Image as ImageIcon, ChevronDown } from 'lucide-react';
 import axios from "axios";
@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addStoreData, updateSingleStoreData } from '@/store/slice/userSlice';
 import { GoBackButton } from '@/components';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { LOCAL_STORAGE_PRODUCTS } from '@/utils/helper';
 
 interface AssetFormData {
 	id: number;
@@ -29,7 +30,7 @@ const ProductForm = () => {
 	const currentId = params?.get("id");
 	const isEdit = Boolean(currentId);
 	const currentProduct = userData?.storeData?.find((data) => data?.id?.toString() === currentId);
-	const { register, handleSubmit, reset, formState: { errors } } = useForm<AssetFormData>({
+	const { register, handleSubmit, setValue, formState: { errors } } = useForm<AssetFormData>({
 		defaultValues: {
 			title: currentProduct?.title || "",
 			category: currentProduct?.category || "men's clothing",
@@ -50,8 +51,9 @@ const ProductForm = () => {
 				description: data?.description,
 			});
 			const responseData = response.data;
-			dispatch(addStoreData({
-				id: userData?.storeData?.length + 1,
+			const maxId = Math.max(...userData?.storeData?.map(item => item.id)) || 0;
+			const newProductData = {
+				id: maxId + 1,
 				title: responseData?.title,
 				category: responseData?.category,
 				price: responseData?.price,
@@ -61,7 +63,10 @@ const ProductForm = () => {
 					rate: 0,
 					count: 0
 				}
-			}));
+			};
+			dispatch(addStoreData(newProductData));
+			const totalProducts = [...userData?.storeData, newProductData];
+			localStorage.setItem(LOCAL_STORAGE_PRODUCTS, JSON.stringify(totalProducts));
 		} else {
 			try {
 				await axios.put(`${STORE_BASE_URL}/${currentId}`, {
@@ -72,21 +77,36 @@ const ProductForm = () => {
 					image: data?.image,
 					description: data?.description,
 				});
-			} catch(e) {
-
-			}
-			dispatch(updateSingleStoreData({
+			} catch (e) { }
+			const updatedData = {
 				id: Number(currentId || 0),
 				title: data?.title,
 				category: data?.category,
 				price: data?.price,
 				image: data?.image,
 				description: data?.description,
-			}));
+			};
+			dispatch(updateSingleStoreData(updatedData));
+			const index = userData?.storeData.findIndex(item => item?.id?.toString() === currentId?.toString());
+			if (index !== -1) {
+				let storeDataTemp: any = [...userData?.storeData];
+				storeDataTemp[index] = { ...userData?.storeData[index], ...updatedData };
+				localStorage.setItem(LOCAL_STORAGE_PRODUCTS, JSON.stringify(storeDataTemp));
+			}
 		}
 		toast.success(`Product ${isEdit ? "Edited" : "Added"}!`, { id: "add" });
 		router.push("/store")
 	};
+
+	useEffect(() => {
+		if (currentProduct) {
+			setValue("title", currentProduct?.title || "");
+			setValue("category", currentProduct?.category || "men's clothing");
+			setValue("price", currentProduct?.price?.toString()?.replace(",", ".") || "");
+			setValue("image", currentProduct?.image || "");
+			setValue("description", currentProduct?.description || "");
+		}
+	}, [currentProduct]);
 
 	return (
 		<div className="w-full h-full relative">

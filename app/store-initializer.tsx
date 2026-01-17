@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import useSWR from 'swr';
 import { fetcherFakeStore } from '@/utils/api';
-import { mapAndSortStoreData } from '@/utils/helper';
+import { LOCAL_STORAGE_PRODUCTS, mapAndSortStoreData } from '@/utils/helper';
 import { updateStoreData } from '@/store/slice/userSlice';
 
 export function StoreInitializer() {
@@ -14,10 +14,16 @@ export function StoreInitializer() {
 		["store", "?limit=1000"],
 		fetcherFakeStore
 	);
-	
+
 	useEffect(() => {
 		const storeResult = mapAndSortStoreData(storeData);
-		if (!userData?.storeData || userData?.storeData?.length === 0) {
+		const localStorageProducts = localStorage.getItem(LOCAL_STORAGE_PRODUCTS);
+		if (localStorageProducts) {
+			try {
+				const productsResult = JSON.parse(localStorageProducts || "");
+				dispatch(updateStoreData(productsResult));
+			} catch (e) { }
+		} else if (!userData?.storeData || userData?.storeData?.length === 0) {
 			dispatch(updateStoreData(storeResult));
 		}
 	}, [storeData]);

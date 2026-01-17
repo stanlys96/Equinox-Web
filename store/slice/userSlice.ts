@@ -48,6 +48,9 @@ export const userSlice = createSlice({
       if (index !== -1) {
         state.storeData[index] = { ...state.storeData[index], ...action.payload };
       }
+    },
+    deleteSingleStoreData: (state, action) => {
+      state.storeData = state.storeData.filter((data) => data?.id?.toString() !== action.payload);
     }
   },
 });
@@ -57,6 +60,7 @@ export const {
   updateOffset,
   updateStoreData,
   addStoreData,
-  updateSingleStoreData
+  updateSingleStoreData,
+  deleteSingleStoreData
 } = userSlice.actions;
 export default userSlice.reducer;

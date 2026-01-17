@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from 'react';
-import { Eye, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
+import { Eye, ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { RowSelector } from './RowSelector';
 import { useAppSelector } from '@/store/hooks';
@@ -21,6 +21,7 @@ interface TableComponentProps {
 	currentPage?: number;
 	totalPage?: number;
 	showFooter?: boolean;
+	onClickDeleteButton?: (id: string) => void;
 }
 
 export const TableComponent = ({
@@ -32,7 +33,8 @@ export const TableComponent = ({
 	onClickPrevButton,
 	currentPage,
 	totalPage,
-	showFooter = true
+	showFooter = true,
+	onClickDeleteButton
 }: TableComponentProps) => {
 	const tableRef = useRef<HTMLDivElement>(null);
 	const userData = useAppSelector((state) => state.user);
@@ -74,12 +76,15 @@ export const TableComponent = ({
 								</td>
 								<td className="px-6 py-4 mx-auto">
 									<div className="flex justify-center gap-3">
-										<Link href={`/${page}/detail/${item?.id?.toString()}`} className="p-2 cursor-pointer rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-all active:scale-90">
+										{page === "poke" && <Link href={`/${page}/detail/${item?.id?.toString()}`} className="p-2 cursor-pointer rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-all active:scale-90">
 											<Eye size={16} />
-										</Link>
+										</Link>}
 										{page === "store" && <Link href={`/${page}/form?id=${item?.id}`} className="p-2 cursor-pointer rounded-lg border border-slate-200 text-slate-400 hover:border-yellow-200 hover:text-yellow-600 transition-all active:scale-90">
 											<Pencil size={16} />
 										</Link>}
+										{page === "store" && <button onClick={() => onClickDeleteButton && onClickDeleteButton(item?.id?.toString())} className="p-2 cursor-pointer rounded-lg border border-slate-200 text-slate-400 hover:border-red-200 hover:text-red-600 transition-all active:scale-90">
+											<Trash2 size={16} />
+										</button>}
 									</div>
 								</td>
 							</tr>

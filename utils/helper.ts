@@ -1,3 +1,5 @@
+export const LOCAL_STORAGE_PRODUCTS = "products";
+
 export const mapAndSortStoreData = (storeData?: any) => {
 	try {
 		return storeData?.map((data: any) => ({

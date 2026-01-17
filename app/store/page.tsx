@@ -1,10 +1,13 @@
 "use client";
 import { AddAssetButton, LoadingSkeleton, SearchBar, TableComponent } from "@/components";
-import { filterDataByQuery, mapAndSortStoreData } from "@/utils/helper";
+import { filterDataByQuery, LOCAL_STORAGE_PRODUCTS, mapAndSortStoreData } from "@/utils/helper";
 import { useEffect, useMemo, useState } from "react";
-import { updateOffset, updatePagination, updateStoreData } from "@/store/slice/userSlice";
+import { deleteSingleStoreData, updateOffset, updatePagination, updateStoreData } from "@/store/slice/userSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Swal from "sweetalert2";
+import axios from "axios";
+import { STORE_BASE_URL } from "@/utils/api";
 
 export default function Home() {
   const router = useRouter();
@@ -66,6 +69,30 @@ export default function Home() {
     router.replace(`${pathname}?${params.toString()}`);
   }
 
+  const handleDeleteProduct = (id: string) => {
+    Swal.fire({
+      title: "Are you sure you want to delete this product?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        await axios.delete(`${STORE_BASE_URL}/${id}`);
+        dispatch(deleteSingleStoreData(id?.toString()));
+        const newStoreData = userData?.storeData?.filter((data) => data?.id?.toString() !== id?.toString());
+        localStorage.setItem(LOCAL_STORAGE_PRODUCTS, JSON.stringify(newStoreData));
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your product has been deleted.",
+          icon: "success"
+        });
+      }
+    });
+  }
+
   useEffect(() => {
     handlePaginationQuery();
   }, [params?.get("pagination"), params?.get("page")]);
@@ -98,6 +125,7 @@ export default function Home() {
             page={"store"}
             data={visibleResult}
             showFooter={showFooter}
+            onClickDeleteButton={handleDeleteProduct}
           />
         ) : <LoadingSkeleton />}
       </div>

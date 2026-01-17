@@ -13,7 +13,6 @@ export default function ProductCard() {
 	const currentId = pathname.split('/').at(-1);
 	const userData = useAppSelector((state) => state.user);
 	const [product, setProduct] = useState<StoreData | null>(null);
-	console.log(userData);
 	useEffect(() => {
 		const theProduct = userData?.storeData?.find((data) => data?.id?.toString() === currentId?.toString());
 		if (theProduct) {
