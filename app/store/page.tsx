@@ -118,7 +118,7 @@ export default function Home() {
   }, [params?.get("query")]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center w-full bg-zinc-50 font-sans">
+    <div className="flex min-h-screen items-start justify-center w-full bg-zinc-50 font-sans">
       <div className="w-full h-full">
         <SearchBar placeholder="Search for your product..." query={storeQuery} setQuery={handleQuery} />
         <div className="w-full justify-center flex items-center">

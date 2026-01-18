@@ -100,7 +100,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex min-h-screen items-center justify-center w-full bg-zinc-50 font-sans">
+    <div className="flex min-h-screen items-start justify-center w-full bg-zinc-50 font-sans">
       <div className="w-full h-full">
         <SearchBar placeholder="Search for your pokemon..." query={pokeQuery} setQuery={handlePokeQuery} />
         {pokeResult?.length > 0 ? (
